@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Login from './Login';
-import Home from './Home';
 import { NavigationContainer } from '@react-navigation/native';
+import Login from './src/Login';
+import Home from './src/Home';
 
 
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Alert, Dimensions, Modal, Button, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Alert, Dimensions, Modal, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 import { useRoute } from '@react-navigation/native';
@@ -24,41 +24,45 @@ export default function Home() {
     try {
       const response = await axios.get('https://reactnative.dev/movies.json');
       setMovies(response.data.movies);
-      setIsLoading(false); // Set loading to false when data is fetched
+      setIsLoading(false); // Once data is fetched, set loading to false
     } catch (error) {
       console.error('Error fetching data:', error);
-      setIsLoading(false); // Set loading to false even if there's an error
+      setIsLoading(false); // Set loading to false in case of error too
     }
   };
 
+  const [currentTime, setCurrentTime] = useState(new Date());
   const currentDate = new Date();
+
   const day = currentDate.getDate();
   const month = currentDate.getMonth() + 1;
   const year = currentDate.getFullYear();
   const dateString = `${day}/${month}/${year}`;
 
-  const hours = currentDate.getHours();
-  const minutes = currentDate.getMinutes();
-  const seconds = currentDate.getSeconds();
+  const hours = currentTime.getHours();
+  const minutes = currentTime.getMinutes();
+  const seconds = currentTime.getSeconds();
   const timeString = `${hours}:${minutes}:${seconds}`;
 
   const dynamicStyle = { backgroundColor: ucolor };
-  const combinestyle = StyleSheet.compose(styles.item, dynamicStyle);
+  const combinestyle=StyleSheet.compose(styles.item, dynamicStyle);
 
-  const customcolor = { color: fcolor };
-  const title = StyleSheet.compose(styles.title, customcolor);
-
+  const customcolor={color:fcolor};
+  const title=StyleSheet.compose(styles.title,customcolor)
   const renderMovieItem = ({ item }) => (
     <TouchableOpacity onPress={() => handleMoviePress(item)}>
       <View style={combinestyle}>
-        <Image source={require('../AwesomeProject1/assets/video-marketing.png')} style={styles.movielogo} />
-        <View>
-          <Text style={title}>{item.title}</Text>
-          <Text style={title}>{item.releaseYear}</Text>
-        </View>
+      <Image source={require('../assets/video-marketing.png')} style={styles.movielogo} />
+
+      <View>
+        <Text style={title}>{item.title}</Text>
+        <Text style={title}>{item.releaseYear}</Text>
       </View>
+    </View>
     </TouchableOpacity>
+    
   );
+
 
   const handleMoviePress = (movie) => {
     setSelectedMovie(movie);
@@ -70,9 +74,17 @@ export default function Home() {
     setSelectedMovie(null);
   };
 
-  const backtologin = () => {
-    navigation.replace('Login');
-  };
+  const backtologin=()=>{
+          navigation.replace('Login')
+  }
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ea6dfc" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -81,23 +93,59 @@ export default function Home() {
         <Text style={styles.datetime}>{timeString}</Text>
       </View>
       <Text style={styles.username}>Welcome {name}</Text>
-      {isLoading ? (
-        <View style={[styles.container, styles.loadingContainer]}>
-          <ActivityIndicator size="large" color="#ea6dfc" />
-        </View>
-      ) : (
+
+      <View style={styles.flatListContainer}>
         <FlatList
           data={movies}
           renderItem={renderMovieItem}
           keyExtractor={item => item.id}
-          style={styles.flatListContainer}
         />
-      )}
-      <TouchableOpacity style={styles.buttonBox} onPress={backtologin}>
+
+        <Modal
+       // style={styles.modalcontainer}
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={closeModal}
+        >
+          <View style={styles.modalcontainer}>
+
+            <View style={styles.moviecontainer} >
+                  <Text style={styles.modaltext}>Movie Detail</Text>
+
+                  <View style={styles.movieblock}>
+                  <View>
+                    <Text style={styles.modaltext}>Movie Name:  </Text>
+                    <View style={styles.spacer}></View>
+                    <Text style={styles.modaltext}>Release Year:  </Text>
+                  </View>
+
+
+                  <View>
+                    <Text style={styles.moviename}>{selectedMovie?.title}</Text>
+                    <View style={styles.spacer}></View>
+                    <Text style={styles.moviename}>{selectedMovie?.releaseYear}</Text>
+                  </View>
+
+                  </View>
+                
+                
+                  <TouchableOpacity style={styles.backbutton} onPress={closeModal}>
+                  <Text style={styles.buttonText}>Back</Text>
+                </TouchableOpacity>
+
+                
+            </View>
+            
+          </View>
+       
+        </Modal>
+      </View>
+
+      <TouchableOpacity style={styles.buttonBox}  onPress={backtologin}>
         <Text style={styles.buttonText}>Back</Text>
       </TouchableOpacity>
     </SafeAreaView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -107,16 +155,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   datettimecontainer: {
-    marginTop: 25,
+    marginTop:25,
     flexDirection: 'row',
     gap: 20
   },
+
   datetime: {
     color: "white",
     fontSize: 22,
     fontWeight: 'bold'
   },
+
   username: {
     marginTop: 25,
     marginBottom: 30,
@@ -124,6 +175,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold'
   },
+
   item: {
     flexDirection: 'row',
     marginBottom: 25,
@@ -140,10 +192,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
+
   movielogo: {
     height: 60,
     width: 60
   },
+
   buttonBox: {
     height: 50,
     width: 120,
@@ -151,7 +205,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 25,
-    marginBottom: 50,
+    marginBottom:50,
   },
   buttonText: {
     color: "white",
@@ -163,12 +217,58 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 20,
   },
+
+  modalcontainer:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center'
+  },
+
+  moviecontainer:{
+    height:Dimensions.get('window').height *0.55 ,
+    width:Dimensions.get('window').width * 0.85,
+    backgroundColor:"#90f29d",
+    borderRadius:40,
+    padding:10,
+    alignItems:'center',
+    justifyContent:'space-evenly'
+  },
+
+  modaltext:{
+    color: "black",
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+
+  backbutton:{
+    height:45,
+    width:120,
+    alignItems:"center",
+    justifyContent:"center",
+    backgroundColor:"#013a03",
+    borderRadius:23
+  },
+
+  moviename:{
+    overflow:"scroll",
+    color: "red",
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+
+  movieblock:{
+    overflow:'scroll',
+    flexDirection:"row",
+  },
+
+  spacer:{
+    height:10
+  },
+
   loadingContainer: {
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: '#231246',
   },
 });

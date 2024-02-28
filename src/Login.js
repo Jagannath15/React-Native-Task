@@ -57,7 +57,7 @@ export default function Login() {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.busLogo}>
-                <Image source={require('../AwesomeProject1/assets/bus.jpg')} style={styles.avatar} />
+                <Image source={require('../assets/bus.jpg')} style={styles.avatar} />
             </View>
 
             <View>
